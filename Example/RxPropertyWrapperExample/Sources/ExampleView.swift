@@ -11,8 +11,7 @@ import RxSwift
 
 class ExampleView: UIView {
     
-    @BehaviorRelayed
-    fileprivate(set) var text: String = "1"
+    @BehaviorRelayed fileprivate(set) var text: String = "1"
     
 }
 

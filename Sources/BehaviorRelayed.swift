@@ -10,7 +10,7 @@ import RxSwift
 import RxRelay
 
 @propertyWrapper
-public final class BehaviorRelayed<Element> {
+public struct BehaviorRelayed<Element> {
     
     public var wrappedValue: Element {
         get {
