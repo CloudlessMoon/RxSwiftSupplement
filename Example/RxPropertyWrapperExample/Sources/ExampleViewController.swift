@@ -19,10 +19,13 @@ class ExampleViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .white
         
         self.exampleView.$text
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { text in
+            .subscribe(onNext: { [weak self] text in
+                guard let self = self else { return }
+                print("\(self.exampleView.text)")
                 print("\(text)")
             })
             .disposed(by: self.disposeBag)

@@ -1,6 +1,6 @@
 //
 //  BehaviorRelayed.swift
-//  RMPassport
+//  RxPropertyWrapper
 //
 //  Created by jiasong on 2023/6/1.
 //
@@ -9,8 +9,7 @@ import Foundation
 import RxSwift
 import RxRelay
 
-@propertyWrapper
-public struct BehaviorRelayed<Element> {
+@propertyWrapper public final class BehaviorRelayed<Element> {
     
     public var wrappedValue: Element {
         get {

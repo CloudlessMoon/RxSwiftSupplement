@@ -16,5 +16,4 @@ Pod::Spec.new do |s|
     # Core dependency
     s.dependency "RxSwift",  "~> 6.5.0"
     s.dependency "RxRelay",  "~> 6.5.0"
-  end
-  
+end
