@@ -21,8 +21,7 @@ class ExampleViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
-        self.exampleView.$text
-            .observe(on: MainScheduler.instance)
+        self.exampleView.$text.observable
             .subscribe(onNext: { [weak self] text in
                 guard let self = self else { return }
                 print("\(self.exampleView.text)")
