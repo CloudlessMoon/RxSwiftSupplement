@@ -50,6 +50,7 @@ public final class BehaviorRelayProjected<Element> {
         set {
             self.lock.lock(); defer { self.lock.unlock() }
             self._dataQueue = newValue
+            self._dataQueue?.rx.registerSpecific()
         }
     }
     

@@ -18,18 +18,18 @@ private struct QueueAssociatedKeys {
 extension Reactive where Base: DispatchQueue {
     
     internal func safeSync<T>(execute work: () -> T) -> T {
-        if let value = DispatchQueue.getSpecific(key: self.detectionKey) {
-            if value.queue == self.base {
-                return work()
-            } else {
-                return self.base.sync(execute: work)
-            }
+        if let value = Base.getSpecific(key: self.detectionKey), value.queue == self.base {
+            return work()
         } else {
-            let value = self.base.getSpecific(key: self.detectionKey)
-            if value == nil || value?.queue != self.base {
-                self.base.setSpecific(key: self.detectionKey, value: QueueReference(queue: self.base))
-            }
+            self.registerSpecific()
             return self.base.sync(execute: work)
+        }
+    }
+    
+    internal func registerSpecific() {
+        let value = self.base.getSpecific(key: self.detectionKey)
+        if value == nil || value?.queue != self.base {
+            self.base.setSpecific(key: self.detectionKey, value: QueueReference(queue: self.base))
         }
     }
     
