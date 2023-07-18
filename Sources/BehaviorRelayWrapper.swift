@@ -15,19 +15,19 @@ import RxRelay
     
     public var wrappedValue: Element {
         get {
-            guard let dataQueue = self.projectedValue.dataQueue else {
+            guard let queue = self.projectedValue.queue else {
                 return self.projectedValue.behaviorRelay.value
             }
-            return dataQueue.rx.safeSync {
+            return queue.rx.safeSync {
                 return self.projectedValue.behaviorRelay.value
             }
         }
         set {
-            guard let dataQueue = self.projectedValue.dataQueue else {
+            guard let queue = self.projectedValue.queue else {
                 self.projectedValue.behaviorRelay.accept(newValue)
                 return
             }
-            dataQueue.rx.safeSync {
+            queue.rx.safeSync {
                 self.projectedValue.behaviorRelay.accept(newValue)
             }
         }
@@ -41,16 +41,16 @@ import RxRelay
 
 public final class BehaviorRelayProjected<Element> {
     
-    private var _dataQueue: DispatchQueue?
-    public var dataQueue: DispatchQueue? {
+    private var _queue: DispatchQueue?
+    public var queue: DispatchQueue? {
         get {
             self.lock.lock(); defer { self.lock.unlock() }
-            return self._dataQueue
+            return self._queue
         }
         set {
             self.lock.lock(); defer { self.lock.unlock() }
-            self._dataQueue = newValue
-            self._dataQueue?.rx.registerSpecific()
+            self._queue = newValue
+            self._queue?.rx.registerSpecific()
         }
     }
     
