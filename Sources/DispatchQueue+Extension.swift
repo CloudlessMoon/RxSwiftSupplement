@@ -7,8 +7,12 @@
 
 import RxSwift
 
-private struct QueueReference {
+private class QueueReference {
     weak var queue: DispatchQueue?
+    
+    init(queue: DispatchQueue?) {
+        self.queue = queue
+    }
 }
 
 private struct QueueAssociatedKeys {
