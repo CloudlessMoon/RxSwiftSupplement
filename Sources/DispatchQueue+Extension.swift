@@ -7,7 +7,7 @@
 
 import RxSwift
 
-private class QueueReference {
+private final class QueueReference {
     weak var queue: DispatchQueue?
     
     init(queue: DispatchQueue?) {
