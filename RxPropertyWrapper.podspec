@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = "RxPropertyWrapper"
-    s.version               = "0.0.7"
+    s.version               = "0.0.8"
     s.summary               = "RxSwift PropertyWrapper"
     s.homepage              = "https://github.com/jiasongs/RxPropertyWrapper"
     s.license               = "MIT"
@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
     s.source_files          = "Sources"
     
     # Core dependency
-    s.dependency "RxSwift",  "~> 6.5.0"
-    s.dependency "RxRelay",  "~> 6.5.0"
+    s.dependency "RxSwift",  "~> 6.6.0"
+    s.dependency "RxRelay",  "~> 6.6.0"
 end
