@@ -16,7 +16,7 @@ private final class QueueReference {
 }
 
 private struct QueueAssociatedKeys {
-    static var specific = true
+    static var specific: UInt8 = 0
 }
 
 extension Reactive where Base: DispatchQueue {
