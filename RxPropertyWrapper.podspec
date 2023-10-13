@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = "RxPropertyWrapper"
-    s.version               = "0.0.8"
+    s.version               = "0.0.9"
     s.summary               = "RxSwift PropertyWrapper"
     s.homepage              = "https://github.com/jiasongs/RxPropertyWrapper"
     s.license               = "MIT"

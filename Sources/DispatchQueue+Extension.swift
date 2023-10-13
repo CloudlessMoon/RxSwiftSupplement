@@ -13,10 +13,15 @@ private final class QueueReference {
     init(queue: DispatchQueue?) {
         self.queue = queue
     }
+    
+    deinit {
+        print("QueueReference deinit")
+    }
 }
 
 private struct QueueAssociatedKeys {
     static var specific: UInt8 = 0
+    static var reference: UInt8 = 0
 }
 
 extension Reactive where Base: DispatchQueue {
@@ -31,10 +36,14 @@ extension Reactive where Base: DispatchQueue {
     }
     
     internal func registerSpecific() {
-        let value = self.base.getSpecific(key: self.detectionKey)
-        if value == nil || value?.queue != self.base {
-            self.base.setSpecific(key: self.detectionKey, value: QueueReference(queue: self.base))
+        let valueLeft = self.base.getSpecific(key: self.detectionKey)
+        let valueRight = objc_getAssociatedObject(self.base, &QueueAssociatedKeys.reference) as? QueueReference
+        guard valueLeft?.queue == nil || valueRight?.queue == nil || valueLeft?.queue != valueRight?.queue else {
+            return
         }
+        let value = QueueReference(queue: self.base)
+        objc_setAssociatedObject(self.base, &QueueAssociatedKeys.reference, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        self.base.setSpecific(key: self.detectionKey, value: value)
     }
     
     private var detectionKey: DispatchSpecificKey<QueueReference> {
