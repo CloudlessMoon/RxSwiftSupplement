@@ -20,22 +20,23 @@ private final class QueueReference {
 }
 
 private struct QueueAssociatedKeys {
-    static var specific: UInt8 = 0
+    static var detection: UInt8 = 0
     static var reference: UInt8 = 0
 }
 
 extension Reactive where Base: DispatchQueue {
     
     internal func safeSync<T>(execute work: () -> T) -> T {
+        self.registerDetection()
+        
         if let value = Base.getSpecific(key: self.detectionKey), value.queue == self.base {
             return work()
         } else {
-            self.registerSpecific()
             return self.base.sync(execute: work)
         }
     }
     
-    internal func registerSpecific() {
+    private func registerDetection() {
         let valueLeft = self.base.getSpecific(key: self.detectionKey)
         let valueRight = objc_getAssociatedObject(self.base, &QueueAssociatedKeys.reference) as? QueueReference
         guard valueLeft?.queue == nil || valueRight?.queue == nil || valueLeft?.queue != valueRight?.queue else {
@@ -47,12 +48,12 @@ extension Reactive where Base: DispatchQueue {
     }
     
     private var detectionKey: DispatchSpecificKey<QueueReference> {
-        if let specific = objc_getAssociatedObject(self.base, &QueueAssociatedKeys.specific) as? DispatchSpecificKey<QueueReference> {
-            return specific
+        if let detectionKey = objc_getAssociatedObject(self.base, &QueueAssociatedKeys.detection) as? DispatchSpecificKey<QueueReference> {
+            return detectionKey
         }
-        let specific = DispatchSpecificKey<QueueReference>()
-        objc_setAssociatedObject(self.base, &QueueAssociatedKeys.specific, specific, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        return specific
+        let detectionKey = DispatchSpecificKey<QueueReference>()
+        objc_setAssociatedObject(self.base, &QueueAssociatedKeys.detection, detectionKey, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        return detectionKey
     }
     
 }

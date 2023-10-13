@@ -18,6 +18,7 @@ import RxRelay
             guard let queue = self.projectedValue.queue else {
                 return self.projectedValue.behaviorRelay.value
             }
+            
             return queue.rx.safeSync {
                 return self.projectedValue.behaviorRelay.value
             }
@@ -27,6 +28,7 @@ import RxRelay
                 self.projectedValue.behaviorRelay.accept(newValue)
                 return
             }
+            
             queue.rx.safeSync {
                 self.projectedValue.behaviorRelay.accept(newValue)
             }
@@ -50,7 +52,6 @@ public final class BehaviorRelayProjected<Element> {
         set {
             self.lock.lock(); defer { self.lock.unlock() }
             self._queue = newValue
-            self._queue?.rx.registerSpecific()
         }
     }
     
