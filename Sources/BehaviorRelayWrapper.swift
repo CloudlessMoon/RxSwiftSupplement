@@ -11,7 +11,7 @@ import RxRelay
 
 @propertyWrapper public final class BehaviorRelayWrapper<Element> {
     
-    public fileprivate(set) var projectedValue: BehaviorRelayProjected<Element>
+    public private(set) var projectedValue: BehaviorRelayProjected<Element>
     
     public var wrappedValue: Element {
         get {
