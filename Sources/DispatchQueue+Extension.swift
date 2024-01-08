@@ -22,6 +22,15 @@ private final class QueueReference {
 private struct QueueAssociatedKeys {
     static var detection: UInt8 = 0
     static var reference: UInt8 = 0
+    static var lock: UInt8 = 0
+}
+
+private extension DispatchQueue {
+    static let __rx_specificLock: os_unfair_lock_t = {
+        let lock: os_unfair_lock_t = .allocate(capacity: 1)
+        lock.initialize(to: os_unfair_lock())
+        return lock
+    }()
 }
 
 extension Reactive where Base: DispatchQueue {
@@ -29,7 +38,10 @@ extension Reactive where Base: DispatchQueue {
     internal func safeSync<T>(execute work: () -> T) -> T {
         self.registerDetection()
         
-        if let value = Base.getSpecific(key: self.detectionKey), value.queue == self.base {
+        os_unfair_lock_lock(Base.__rx_specificLock)
+        let reference = Base.getSpecific(key: self.detectionKey)
+        os_unfair_lock_unlock(Base.__rx_specificLock)
+        if let reference = reference, reference.queue == self.base {
             return work()
         } else {
             return self.base.sync(execute: work)
@@ -37,6 +49,15 @@ extension Reactive where Base: DispatchQueue {
     }
     
     private func registerDetection() {
+        let initialize = {
+            let value = NSLock()
+            value.name = "com.ruanmei.rx-property-wrapper.get-reference"
+            objc_setAssociatedObject(self.base, &QueueAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            return value
+        }
+        let lock = (objc_getAssociatedObject(self.base, &QueueAssociatedKeys.lock) as? NSLock) ?? initialize()
+        lock.lock(); defer { lock.unlock() }
+        
         let valueLeft = self.base.getSpecific(key: self.detectionKey)
         let valueRight = objc_getAssociatedObject(self.base, &QueueAssociatedKeys.reference) as? QueueReference
         guard valueLeft?.queue == nil || valueRight?.queue == nil || valueLeft?.queue != valueRight?.queue else {
