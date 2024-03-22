@@ -26,11 +26,19 @@ private struct QueueAssociatedKeys {
 }
 
 private extension DispatchQueue {
-    static let __rx_specificLock: os_unfair_lock_t = {
+    private static let __rx_specificLock: os_unfair_lock_t = {
         let lock: os_unfair_lock_t = .allocate(capacity: 1)
         lock.initialize(to: os_unfair_lock())
         return lock
     }()
+    
+    static func safeGetSpecific<T>(key: DispatchSpecificKey<T>) -> T? {
+        os_unfair_lock_lock(DispatchQueue.__rx_specificLock)
+        defer {
+            os_unfair_lock_unlock(DispatchQueue.__rx_specificLock)
+        }
+        return DispatchQueue.getSpecific(key: key)
+    }
 }
 
 extension Reactive where Base: DispatchQueue {
@@ -38,9 +46,7 @@ extension Reactive where Base: DispatchQueue {
     internal func safeSync<T>(execute work: () -> T) -> T {
         self.registerDetection()
         
-        os_unfair_lock_lock(Base.__rx_specificLock)
-        let reference = Base.getSpecific(key: self.detectionKey)
-        os_unfair_lock_unlock(Base.__rx_specificLock)
+        let reference = Base.safeGetSpecific(key: self.detectionKey)
         if let reference = reference, reference.queue == self.base {
             return work()
         } else {
