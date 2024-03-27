@@ -43,6 +43,7 @@ private extension DispatchQueue {
 
 extension Reactive where Base: DispatchQueue {
     
+    @discardableResult
     internal func safeSync<T>(execute work: () -> T) -> T {
         self.registerDetection()
         
