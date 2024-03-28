@@ -25,7 +25,7 @@ private struct QueueAssociatedKeys {
     static var lock: UInt8 = 0
 }
 
-private extension DispatchQueue {
+fileprivate extension DispatchQueue {
     private static let __rx_specificLock: os_unfair_lock_t = {
         let lock: os_unfair_lock_t = .allocate(capacity: 1)
         lock.initialize(to: os_unfair_lock())
