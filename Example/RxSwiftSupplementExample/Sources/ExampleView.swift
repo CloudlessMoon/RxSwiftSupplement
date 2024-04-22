@@ -1,12 +1,12 @@
 //
 //  ExampleView.swift
-//  RxPropertyWrapperExample
+//  RxSwiftSupplementExample
 //
 //  Created by jiasong on 2023/6/1.
 //
 
 import UIKit
-import RxPropertyWrapper
+import RxSwiftSupplement
 import RxSwift
 
 class ExampleView: UIView {

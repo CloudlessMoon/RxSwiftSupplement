@@ -1,6 +1,6 @@
 //
 //  DispatchQueue+Extension.swift
-//  RxPropertyWrapper
+//  RxSwiftSupplement
 //
 //  Created by jiasong on 2023/7/18.
 //
@@ -58,7 +58,7 @@ extension Reactive where Base: DispatchQueue {
     private func registerDetection() {
         let initialize = {
             let value = NSLock()
-            value.name = "com.ruanmei.rx-property-wrapper.get-reference"
+            value.name = "com.ruanmei.rx-supplement.get-reference"
             objc_setAssociatedObject(self.base, &QueueAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }

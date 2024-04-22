@@ -1,2 +1,2 @@
-# RxPropertyWrapper
-PropertyWrapper
+# RxSwiftSupplement
+Supplement

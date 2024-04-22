@@ -1,6 +1,6 @@
 //
 //  BehaviorRelayWrapper.swift
-//  RxPropertyWrapper
+//  RxSwiftSupplement
 //
 //  Created by jiasong on 2023/6/1.
 //

@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  RxPropertyWrapperExample
+//  RxSwiftSupplementExample
 //
 //  Created by jiasong on 2023/6/1.
 //
