@@ -45,7 +45,7 @@ public final class BehaviorRelayProjected<Element> {
     
     private var _queue: DispatchQueue?
     
-    private let subject: BehaviorRelay<Element>
+    private let relay: BehaviorRelay<Element>
     
     private lazy var lock: os_unfair_lock_t = {
         let lock: os_unfair_lock_t = .allocate(capacity: 1)
@@ -54,7 +54,7 @@ public final class BehaviorRelayProjected<Element> {
     }()
     
     fileprivate init(wrappedValue: Element) {
-        self.subject = BehaviorRelay(value: wrappedValue)
+        self.relay = BehaviorRelay(value: wrappedValue)
     }
     
     deinit {
@@ -68,11 +68,11 @@ public final class BehaviorRelayProjected<Element> {
     }
     
     fileprivate var value: Element {
-        return self.subject.value
+        return self.relay.value
     }
     
     fileprivate func accept(_ value: Element) {
-        self.subject.accept(value)
+        self.relay.accept(value)
     }
     
 }
@@ -94,7 +94,7 @@ extension BehaviorRelayProjected {
     
     /// 注意：与BehaviorRelay一致，不会发送error or completed事件
     public var observable: Observable<Element> {
-        return self.subject.asObservable()
+        return self.relay.asObservable()
     }
     
 }
