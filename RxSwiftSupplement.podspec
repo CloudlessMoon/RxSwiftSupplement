@@ -11,6 +11,9 @@ Pod::Spec.new do |s|
     s.swift_versions        = ["5.1"]
     s.static_framework      = true
     s.requires_arc          = true
+    s.pod_target_xcconfig   = { 
+        'SWIFT_INSTALL_OBJC_HEADER' => 'NO'
+    }
     
     # Core dependency
     s.dependency "RxSwift",  "~> 6.0"
