@@ -22,7 +22,7 @@ public extension AnyDisposeBag {
     
     var disposeBag: DisposeBag {
         get {
-            return self.safeValue {
+            return self.lock.withLock {
                 if let disposeBag = objc_getAssociatedObject(self, &AnyDisposeBagAssociatedKeys.bag) as? DisposeBag {
                     return disposeBag
                 }
@@ -32,7 +32,7 @@ public extension AnyDisposeBag {
             }
         }
         set {
-            self.safeValue {
+            self.lock.withLock {
                 objc_setAssociatedObject(self, &AnyDisposeBagAssociatedKeys.bag, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
         }
@@ -41,15 +41,9 @@ public extension AnyDisposeBag {
     private var lock: NSLock {
         let initialize = {
             let value = NSLock()
-            value.name = "com.ruanmei.rx-supplement.any-dispose-bag"
             objc_setAssociatedObject(self, &AnyDisposeBagAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }
         return (objc_getAssociatedObject(self, &AnyDisposeBagAssociatedKeys.lock) as? NSLock) ?? initialize()
-    }
-    
-    private func safeValue<T>(execute work: () -> T) -> T {
-        self.lock.lock(); defer { self.lock.unlock() }
-        return work()
     }
 }

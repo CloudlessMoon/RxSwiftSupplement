@@ -17,7 +17,7 @@ public extension Reactive where Base: AnyObject {
     
     var disposeBag: DisposeBag {
         get {
-            return self.safeValue {
+            return self.lock.withLock {
                 if let disposeBag = objc_getAssociatedObject(self.base, &DisposeBagAssociatedKeys.bag) as? DisposeBag {
                     return disposeBag
                 }
@@ -27,7 +27,7 @@ public extension Reactive where Base: AnyObject {
             }
         }
         set {
-            self.safeValue {
+            self.lock.withLock {
                 objc_setAssociatedObject(self.base, &DisposeBagAssociatedKeys.bag, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
         }
@@ -36,16 +36,10 @@ public extension Reactive where Base: AnyObject {
     private var lock: NSLock {
         let initialize = {
             let value = NSLock()
-            value.name = "com.ruanmei.rx-supplement.dispose-bag"
             objc_setAssociatedObject(self.base, &DisposeBagAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }
         return (objc_getAssociatedObject(self.base, &DisposeBagAssociatedKeys.lock) as? NSLock) ?? initialize()
-    }
-    
-    private func safeValue<T>(execute work: () -> T) -> T {
-        self.lock.lock(); defer { self.lock.unlock() }
-        return work()
     }
     
 }
