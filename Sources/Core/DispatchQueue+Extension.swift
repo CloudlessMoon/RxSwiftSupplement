@@ -50,13 +50,13 @@ extension Reactive where Base: DispatchQueue {
         }
     }
     
-    private var lock: NSLock {
+    private var lock: AllocatedUnfairLock {
         let initialize = {
-            let value = NSLock()
+            let value = AllocatedUnfairLock()
             objc_setAssociatedObject(self.base, &QueueAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }
-        return (objc_getAssociatedObject(self.base, &QueueAssociatedKeys.lock) as? NSLock) ?? initialize()
+        return (objc_getAssociatedObject(self.base, &QueueAssociatedKeys.lock) as? AllocatedUnfairLock) ?? initialize()
     }
     
 }

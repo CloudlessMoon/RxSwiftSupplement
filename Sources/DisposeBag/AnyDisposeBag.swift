@@ -38,12 +38,12 @@ public extension AnyDisposeBag {
         }
     }
     
-    private var lock: NSLock {
+    private var lock: AllocatedUnfairLock {
         let initialize = {
-            let value = NSLock()
+            let value = AllocatedUnfairLock()
             objc_setAssociatedObject(self, &AnyDisposeBagAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }
-        return (objc_getAssociatedObject(self, &AnyDisposeBagAssociatedKeys.lock) as? NSLock) ?? initialize()
+        return (objc_getAssociatedObject(self, &AnyDisposeBagAssociatedKeys.lock) as? AllocatedUnfairLock) ?? initialize()
     }
 }
