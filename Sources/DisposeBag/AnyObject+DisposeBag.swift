@@ -9,7 +9,6 @@ import Foundation
 import RxSwift
 
 private struct DisposeBagAssociatedKeys {
-    static var bag: UInt8 = 0
     static var lock: UInt8 = 0
 }
 
@@ -17,29 +16,20 @@ public extension Reactive where Base: AnyObject {
     
     var disposeBag: DisposeBag {
         get {
-            return self.lock.withLock {
-                if let disposeBag = objc_getAssociatedObject(self.base, &DisposeBagAssociatedKeys.bag) as? DisposeBag {
-                    return disposeBag
-                }
-                let disposeBag = DisposeBag()
-                objc_setAssociatedObject(self.base, &DisposeBagAssociatedKeys.bag, disposeBag, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-                return disposeBag
-            }
+            self.lock.withLock { $0 }
         }
         set {
-            self.lock.withLock {
-                objc_setAssociatedObject(self.base, &DisposeBagAssociatedKeys.bag, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            }
+            self.lock.withLock { $0 = newValue }
         }
     }
     
-    private var lock: AllocatedUnfairLock {
+    private var lock: AllocatedUnfairLock<DisposeBag> {
         let initialize = {
-            let value = AllocatedUnfairLock()
+            let value = AllocatedUnfairLock(state: DisposeBag())
             objc_setAssociatedObject(self.base, &DisposeBagAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }
-        return (objc_getAssociatedObject(self.base, &DisposeBagAssociatedKeys.lock) as? AllocatedUnfairLock) ?? initialize()
+        return (objc_getAssociatedObject(self.base, &DisposeBagAssociatedKeys.lock) as? AllocatedUnfairLock<DisposeBag>) ?? initialize()
     }
     
 }

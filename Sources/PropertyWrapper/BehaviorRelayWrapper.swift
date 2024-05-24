@@ -43,15 +43,13 @@ import RxRelay
 
 public final class BehaviorRelayProjected<Element> {
     
-    private var _queue: DispatchQueue?
-    
     fileprivate let relay: BehaviorRelay<Element>
     
-    private let lock: AllocatedUnfairLock
+    private let lock: AllocatedUnfairLock<DispatchQueue?>
     
     fileprivate init(wrappedValue: Element) {
         self.relay = BehaviorRelay(value: wrappedValue)
-        self.lock = AllocatedUnfairLock()
+        self.lock = AllocatedUnfairLock(state: nil)
     }
     
 }
@@ -60,14 +58,10 @@ extension BehaviorRelayProjected {
     
     public var queue: DispatchQueue? {
         get {
-            self.lock.withLock {
-                return self._queue
-            }
+            self.lock.withLock { $0 }
         }
         set {
-            self.lock.withLock {
-                self._queue = newValue
-            }
+            self.lock.withLock { $0 = newValue }
         }
     }
     

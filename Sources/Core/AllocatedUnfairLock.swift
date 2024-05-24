@@ -7,11 +7,13 @@
 
 import Foundation
 
-internal final class AllocatedUnfairLock {
+internal final class AllocatedUnfairLock<State> {
     
+    private var state: State
     private let lock: os_unfair_lock_t
     
-    init() {
+    internal init(state: State) {
+        self.state = state
         self.lock = .allocate(capacity: 1)
         self.lock.initialize(to: os_unfair_lock())
     }
@@ -25,9 +27,25 @@ internal final class AllocatedUnfairLock {
 
 extension AllocatedUnfairLock {
     
-    func withLock<T>(_ body: () throws -> T) rethrows -> T {
-        os_unfair_lock_lock(self.lock); defer { os_unfair_lock_unlock(self.lock) }
-        return try body()
+    internal func withLock<T>(_ body: (inout State) throws -> T) rethrows -> T {
+        os_unfair_lock_lock(self.lock)
+        defer {
+            os_unfair_lock_unlock(self.lock)
+        }
+        return try body(&self.state)
     }
     
+}
+
+extension AllocatedUnfairLock where State == Void {
+    
+    internal convenience init() {
+        self.init(state: ())
+    }
+    
+    internal func withLock<T>(_ body: () throws -> T) rethrows -> T {
+        return try self.withLock { _ in
+            return try body()
+        }
+    }
 }
