@@ -34,8 +34,7 @@ class ExampleViewController: UIViewController {
                 print("\(text)")
             })
             .disposed(by: self.rx.disposeBag)
-        
-        
+                
         self.exampleView.setText("12")
     }
     
