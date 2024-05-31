@@ -7,9 +7,10 @@
 
 import Foundation
 import RxSwift
+import ThreadSafe
 
-private struct AnyDisposeBagAssociatedKeys {
-    static var lock: UInt8 = 0
+private struct AssociatedKeys {
+    static var readWrite: UInt8 = 0
 }
 
 public protocol AnyDisposeBag: AnyObject {
@@ -21,19 +22,19 @@ public extension AnyDisposeBag {
     
     var disposeBag: DisposeBag {
         get {
-            self.lock.withLock { $0 }
+            return self.readWrite.value
         }
         set {
-            self.lock.withLock { $0 = newValue }
+            self.readWrite.value = newValue
         }
     }
     
-    private var lock: AllocatedUnfairLock<DisposeBag> {
+    private var readWrite: ReadWriteValue<DisposeBag> {
         let initialize = {
-            let value = AllocatedUnfairLock(state: DisposeBag())
-            objc_setAssociatedObject(self, &AnyDisposeBagAssociatedKeys.lock, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            let value = ReadWriteValue(DisposeBag(), taskLabel: "com.jiasong.rxswift-supplement.dispose-bag")
+            objc_setAssociatedObject(self, &AssociatedKeys.readWrite, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }
-        return (objc_getAssociatedObject(self, &AnyDisposeBagAssociatedKeys.lock) as? AllocatedUnfairLock<DisposeBag>) ?? initialize()
+        return (objc_getAssociatedObject(self, &AssociatedKeys.readWrite) as? ReadWriteValue<DisposeBag>) ?? initialize()
     }
 }

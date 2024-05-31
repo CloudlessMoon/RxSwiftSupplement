@@ -11,12 +11,11 @@ import RxSwift
 
 class ExampleView: UIView {
     
-    @BehaviorRelayWrapper fileprivate(set) var text: String = "1"
+    @BehaviorRelayWrapper
+    fileprivate(set) var text: String = "1"
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        self.$text.queue = DispatchQueue(label: "test")
     }
     
     required init?(coder: NSCoder) {

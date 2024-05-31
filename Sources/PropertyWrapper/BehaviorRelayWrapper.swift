@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import RxRelay
+import ThreadSafe
 
 @propertyWrapper public final class BehaviorRelayWrapper<Element> {
     
@@ -15,23 +16,10 @@ import RxRelay
     
     public var wrappedValue: Element {
         get {
-            guard let queue = self.projectedValue.queue else {
-                return self.projectedValue.relay.value
-            }
-            
-            return queue.rx.safeSync {
-                return self.projectedValue.relay.value
-            }
+            return self.projectedValue.value
         }
         set {
-            guard let queue = self.projectedValue.queue else {
-                self.projectedValue.relay.accept(newValue)
-                return
-            }
-            
-            queue.rx.safeSync {
-                self.projectedValue.relay.accept(newValue)
-            }
+            self.projectedValue.value = newValue
         }
     }
     
@@ -43,31 +31,28 @@ import RxRelay
 
 public final class BehaviorRelayProjected<Element> {
     
-    fileprivate let relay: BehaviorRelay<Element>
-    
-    private let lock: AllocatedUnfairLock<DispatchQueue?>
-    
-    fileprivate init(wrappedValue: Element) {
-        self.relay = BehaviorRelay(value: wrappedValue)
-        self.lock = AllocatedUnfairLock(state: nil)
-    }
-    
-}
-
-extension BehaviorRelayProjected {
-    
-    public var queue: DispatchQueue? {
-        get {
-            self.lock.withLock { $0 }
-        }
-        set {
-            self.lock.withLock { $0 = newValue }
-        }
-    }
+    @UnfairLockValueWrapper
+    public var task: ReadWriteTask
     
     /// 注意：与BehaviorRelay一致，不会发送error or completed事件
     public var observable: Observable<Element> {
         return self.relay.asObservable()
+    }
+    
+    private let relay: BehaviorRelay<Element>
+    
+    fileprivate init(wrappedValue: Element, taskLabel: String? = nil) {
+        self.relay = BehaviorRelay(value: wrappedValue)
+        self.task = ReadWriteTask(label: taskLabel ?? "com.jiasong.rxswift-supplement.behavior-relay")
+    }
+    
+    fileprivate var value: Element {
+        get {
+            return self.task.read { self.relay.value }
+        }
+        set {
+            self.task.write { self.relay.accept(newValue) }
+        }
     }
     
 }
