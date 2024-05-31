@@ -23,8 +23,8 @@ import ThreadSafe
         }
     }
     
-    public init(wrappedValue: Element) {
-        self.projectedValue = BehaviorRelayProjected(wrappedValue: wrappedValue)
+    public init(wrappedValue: Element, task: ReadWriteTask = .init(label: "com.jiasong.rxswift-supplement.behavior-relay")) {
+        self.projectedValue = BehaviorRelayProjected(wrappedValue: wrappedValue, task: task)
     }
     
 }
@@ -41,9 +41,9 @@ public final class BehaviorRelayProjected<Element> {
     
     private let relay: BehaviorRelay<Element>
     
-    fileprivate init(wrappedValue: Element, taskLabel: String? = nil) {
+    fileprivate init(wrappedValue: Element, task: ReadWriteTask) {
         self.relay = BehaviorRelay(value: wrappedValue)
-        self.task = ReadWriteTask(label: taskLabel ?? "com.jiasong.rxswift-supplement.behavior-relay")
+        self.task = task
     }
     
     fileprivate var value: Element {
