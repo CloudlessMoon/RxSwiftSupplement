@@ -12,7 +12,7 @@ import ThreadSafe
 
 @propertyWrapper public final class BehaviorRelayWrapper<Element> {
     
-    public private(set) var projectedValue: BehaviorRelayProjected<Element>
+    public let projectedValue: BehaviorRelayProjected<Element>
     
     public var wrappedValue: Element {
         get {
