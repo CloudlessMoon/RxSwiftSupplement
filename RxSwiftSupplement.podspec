@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = "RxSwiftSupplement"
-    s.version               = "0.1.8"
+    s.version               = "0.1.9"
     s.summary               = "RxSwift Supplement"
     s.homepage              = "https://github.com/jiasongs/RxSwiftSupplement"
     s.license               = "MIT"
@@ -16,12 +16,12 @@ Pod::Spec.new do |s|
     }
     
     # Core dependency
+    s.dependency "ThreadSafe", "~> 1.0"
     s.dependency "RxSwift",  "~> 6.0"
     s.dependency "RxRelay",  "~> 6.0"
 
     s.subspec "Core" do |ss|
         ss.source_files = "Sources/Core/**/*.{swift}"
-        ss.dependency "ThreadSafe", "~> 1.0"
     end
 
     s.subspec "PropertyWrapper" do |ss|
