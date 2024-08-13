@@ -36,7 +36,7 @@ public final class BehaviorRelayProjected<Element> {
     
     /// 注意：与BehaviorRelay一致，不会发送error or completed事件
     public var observable: Observable<Element> {
-        return self.relay.asObservable()
+        return self.relay.asInfallible().asObservable()
     }
     
     private let relay: BehaviorRelay<Element>
