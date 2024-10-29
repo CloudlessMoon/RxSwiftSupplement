@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = "RxSwiftSupplement"
-    s.version               = "0.2.0"
+    s.version               = "0.2.1"
     s.summary               = "RxSwift Supplement"
     s.homepage              = "https://github.com/jiasongs/RxSwiftSupplement"
     s.license               = "MIT"
@@ -11,9 +11,6 @@ Pod::Spec.new do |s|
     s.swift_versions        = ["5.1"]
     s.static_framework      = true
     s.requires_arc          = true
-    s.pod_target_xcconfig   = { 
-        'SWIFT_INSTALL_OBJC_HEADER' => 'NO'
-    }
     
     # Core dependency
     s.dependency "ThreadSafe", "~> 1.0"
