@@ -111,6 +111,7 @@
 				7AE9736F2BD5EF63003CF880 /* Frameworks */,
 				7AE973702BD5EF63003CF880 /* Resources */,
 				7AC5A29D2C08517D00B83D24 /* ShellScript */,
+				3A413BC3B9B326148CB4657B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -168,6 +169,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3A413BC3B9B326148CB4657B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RxSwiftSupplementExample/Pods-RxSwiftSupplementExample-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RxSwiftSupplementExample/Pods-RxSwiftSupplementExample-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RxSwiftSupplementExample/Pods-RxSwiftSupplementExample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		52171B4E9B8B0DD362D95195 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

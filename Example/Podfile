@@ -5,5 +5,5 @@ install! "cocoapods", :warn_for_unused_master_specs_repo => false
 target 'RxSwiftSupplementExample' do
   pod "RxSwiftSupplement", :path => ".."
 
-  pod 'SwiftLint', '~> 0.55.1', :configurations => ['Debug']
+  pod 'SwiftLint', '~> 0.57.0', :configurations => ['Debug']
 end
