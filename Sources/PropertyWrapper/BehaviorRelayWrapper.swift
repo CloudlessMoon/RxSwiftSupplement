@@ -23,7 +23,7 @@ import ThreadSafe
         }
     }
     
-    public init(wrappedValue: Element, task: ReadWriteTask = .init(label: "com.jiasong.rxswift-supplement.behavior-relay")) {
+    public init(wrappedValue: Element, task: ReadWriteTask? = .init(label: "com.jiasong.rxswift-supplement.behavior-relay")) {
         self.projectedValue = BehaviorRelayProjected(wrappedValue: wrappedValue, task: task)
     }
     
@@ -32,26 +32,37 @@ import ThreadSafe
 public final class BehaviorRelayProjected<Element> {
     
     @UnfairLockValueWrapper
-    public var task: ReadWriteTask
+    public var task: ReadWriteTask?
     
     /// 注意：与BehaviorRelay一致，不会发送error or completed事件
     public var observable: Observable<Element> {
-        return self.relay.asInfallible().asObservable()
+        return self.relay.asObservable()
     }
     
     private let relay: BehaviorRelay<Element>
     
-    fileprivate init(wrappedValue: Element, task: ReadWriteTask) {
+    fileprivate init(wrappedValue: Element, task: ReadWriteTask?) {
         self.relay = BehaviorRelay(value: wrappedValue)
         self.task = task
     }
     
     fileprivate var value: Element {
         get {
-            return self.task.read { self.relay.value }
+            guard let task = self.task else {
+                return self.relay.value
+            }
+            return task.read {
+                return self.relay.value
+            }
         }
         set {
-            self.task.write { self.relay.accept(newValue) }
+            guard let task = self.task else {
+                self.relay.accept(newValue)
+                return
+            }
+            task.write {
+                self.relay.accept(newValue)
+            }
         }
     }
     

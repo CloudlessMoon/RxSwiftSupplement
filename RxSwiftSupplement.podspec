@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = "RxSwiftSupplement"
-    s.version               = "0.2.1"
+    s.version               = "1.0.0"
     s.summary               = "RxSwift Supplement"
     s.homepage              = "https://github.com/jiasongs/RxSwiftSupplement"
     s.license               = "MIT"
