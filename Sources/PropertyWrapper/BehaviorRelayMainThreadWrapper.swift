@@ -36,7 +36,7 @@ public final class BehaviorRelayMainThreadProjected<Element> {
         return self.relay.asObservable()
     }
     
-    private let task = MainThreadTask()
+    private let task = MainThreadTask.default
     private let relay: BehaviorRelay<Element>
     
     fileprivate init(wrappedValue: Element) {
