@@ -15,7 +15,7 @@ class ExampleViewController: UIViewController {
         return ExampleView()
     }()
     
-    @BehaviorRelayMainThreadWrapper
+    @BehaviorRelayWrapper
     var name: String = "1"
     
     override func viewDidLoad() {
@@ -37,7 +37,7 @@ class ExampleViewController: UIViewController {
                 print("\(text)")
             })
             .disposed(by: self.rx.disposeBag)
-                
+        
         self.exampleView.setText("12")
         
         self.$name.observable

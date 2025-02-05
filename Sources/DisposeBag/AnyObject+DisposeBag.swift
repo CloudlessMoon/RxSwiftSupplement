@@ -9,10 +9,6 @@ import Foundation
 import RxSwift
 import ThreadSafe
 
-private struct AssociatedKeys {
-    static var readWrite: UInt8 = 0
-}
-
 public extension Reactive where Base: AnyObject {
     
     var disposeBag: DisposeBag {
@@ -33,4 +29,8 @@ public extension Reactive where Base: AnyObject {
         return (objc_getAssociatedObject(self.base, &AssociatedKeys.readWrite) as? ReadWriteValue<DisposeBag>) ?? initialize()
     }
     
+}
+
+private struct AssociatedKeys {
+    static var readWrite: UInt8 = 0
 }

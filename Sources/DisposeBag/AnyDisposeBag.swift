@@ -9,10 +9,6 @@ import Foundation
 import RxSwift
 import ThreadSafe
 
-private struct AssociatedKeys {
-    static var readWrite: UInt8 = 0
-}
-
 public protocol AnyDisposeBag: AnyObject {
     
     var disposeBag: DisposeBag { get set }
@@ -37,4 +33,8 @@ public extension AnyDisposeBag {
         }
         return (objc_getAssociatedObject(self, &AssociatedKeys.readWrite) as? ReadWriteValue<DisposeBag>) ?? initialize()
     }
+}
+
+private struct AssociatedKeys {
+    static var readWrite: UInt8 = 0
 }
