@@ -27,7 +27,7 @@ public extension AnyDisposeBag {
     
     private var readWrite: ReadWriteValue<DisposeBag> {
         let initialize = {
-            let value = ReadWriteValue(DisposeBag(), task: ReadWriteTask(label: "com.jiasong.rxswift-supplement.dispose-bag"))
+            let value = ReadWriteValue(DisposeBag(), task: ReadWriteTask(label: "com.cloudlessmoon.rxswift-supplement.dispose-bag"))
             objc_setAssociatedObject(self, &AssociatedKeys.readWrite, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return value
         }
