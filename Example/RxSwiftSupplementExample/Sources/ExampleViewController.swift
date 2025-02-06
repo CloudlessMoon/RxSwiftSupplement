@@ -22,6 +22,38 @@ class ExampleViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
+        self.test1()
+        // self.test2()
+    }
+    
+}
+
+extension ExampleViewController {
+    
+    private func test1() {
+        print("开始")
+        
+        let queue = DispatchQueue(label: "test", attributes: .concurrent)
+        for item in 0...500 {
+            queue.async {
+                self.name = "\(item)"
+            }
+        }
+        
+        self.$name.observable
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                _ = self.name
+            })
+            .disposed(by: self.rx.disposeBag)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.name = "成功"
+            print("\(self.name)")
+        }
+    }
+    
+    private func test2() {
         self.exampleView.$text.observable
             .subscribe(onNext: { [weak self] text in
                 guard let self = self else { return }
@@ -55,11 +87,6 @@ class ExampleViewController: UIViewController {
                 self.name = "\(item)"
             }
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.exampleView = ExampleView()
     }
     
 }
