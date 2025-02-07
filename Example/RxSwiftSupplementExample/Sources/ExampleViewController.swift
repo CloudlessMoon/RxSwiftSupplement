@@ -23,7 +23,7 @@ class ExampleViewController: UIViewController {
         self.view.backgroundColor = .white
         
         self.test1()
-        // self.test2()
+        self.test2()
     }
     
 }

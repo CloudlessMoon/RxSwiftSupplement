@@ -35,12 +35,6 @@ public final class BehaviorRelayProjected<Element> {
         return self.relay.asObservable()
     }
     
-    private let relay: BehaviorRelay<Element>
-    
-    fileprivate init(wrappedValue: Element) {
-        self.relay = BehaviorRelay(value: wrappedValue)
-    }
-    
     fileprivate var value: Element {
         get {
             return self.relay.value
@@ -48,6 +42,12 @@ public final class BehaviorRelayProjected<Element> {
         set {
             self.relay.accept(newValue)
         }
+    }
+    
+    private let relay: BehaviorRelay<Element>
+    
+    fileprivate init(wrappedValue: Element) {
+        self.relay = BehaviorRelay(value: wrappedValue)
     }
     
 }
