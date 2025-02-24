@@ -28,6 +28,14 @@ import RxRelay
     
 }
 
+extension BehaviorRelayWrapper: CustomStringConvertible {
+    
+    public var description: String {
+        return String(describing: self.wrappedValue)
+    }
+    
+}
+
 public final class BehaviorRelayProjected<Element> {
     
     /// 注意：与BehaviorRelay一致，不会发送error or completed事件
