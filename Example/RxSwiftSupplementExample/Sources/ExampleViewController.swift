@@ -8,6 +8,7 @@
 import UIKit
 import RxSwiftSupplement
 import RxSwift
+import ThreadSafe
 
 class ExampleViewController: UIViewController {
     
@@ -18,12 +19,14 @@ class ExampleViewController: UIViewController {
     @BehaviorRelayWrapper
     var name: String = "1"
     
+    let task = ReadWriteTask(label: "test-task", attributes: .serial)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
         self.test1()
-        self.test2()
+        // self.test2()
     }
     
 }
@@ -42,17 +45,22 @@ extension ExampleViewController {
         let queue = DispatchQueue(label: "test", attributes: .concurrent)
         for item in 0...1 {
             queue.async {
-                self.name = "\(item)"
+                self.task.write {
+                    self.name = "\(item)"
+                }
             }
         }
         
         self.$name.observable
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                _ = self.name
+                self.task.write {
+                    
+                }
             })
             .disposed(by: self.rx.disposeBag)
         
+        print("执行after")
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.name = "成功"
             print("\(self.name)")
