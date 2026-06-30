@@ -18,23 +18,25 @@ public extension AnyDisposeBag {
     
     var disposeBag: DisposeBag {
         get {
-            return self.readWrite.value
+            return self._disposeBag.value
         }
         set {
-            self.readWrite.value = newValue
+            self._disposeBag.value = newValue
         }
     }
     
-    private var readWrite: ReadWriteValue<DisposeBag> {
-        let initialize = {
-            let value = ReadWriteValue(DisposeBag(), task: ReadWriteTask(label: "com.cloudlessmoon.rxswift-supplement.dispose-bag"))
-            objc_setAssociatedObject(self, &AssociatedKeys.readWrite, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            return value
+    private var _disposeBag: UnfairLockValue<DisposeBag> {
+        if let disposeBag = objc_getAssociatedObject(self, &AssociatedKeys.disposeBag) as? UnfairLockValue<DisposeBag> {
+            return disposeBag
+        } else {
+            let disposeBag = UnfairLockValue(DisposeBag())
+            objc_setAssociatedObject(self, &AssociatedKeys.disposeBag, disposeBag, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            return disposeBag
         }
-        return (objc_getAssociatedObject(self, &AssociatedKeys.readWrite) as? ReadWriteValue<DisposeBag>) ?? initialize()
     }
+    
 }
 
-private struct AssociatedKeys {
-    static var readWrite: UInt8 = 0
+private enum AssociatedKeys {
+    static var disposeBag: UInt8 = 0
 }
