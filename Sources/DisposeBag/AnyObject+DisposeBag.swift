@@ -21,11 +21,11 @@ public extension Reactive where Base: AnyObject {
     }
     
     private var _disposeBag: UnfairLockValue<DisposeBag> {
-        if let disposeBag = objc_getAssociatedObject(self, &AssociatedKeys.disposeBag) as? UnfairLockValue<DisposeBag> {
+        if let disposeBag = objc_getAssociatedObject(self.base, &AssociatedKeys.disposeBag) as? UnfairLockValue<DisposeBag> {
             return disposeBag
         } else {
             let disposeBag = UnfairLockValue(DisposeBag())
-            objc_setAssociatedObject(self, &AssociatedKeys.disposeBag, disposeBag, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self.base, &AssociatedKeys.disposeBag, disposeBag, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return disposeBag
         }
     }
