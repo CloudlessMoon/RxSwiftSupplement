@@ -31,7 +31,7 @@ import RxRelay
     @available(*, unavailable, message: "@BehaviorRelayWrapper is only available on properties of classes")
     public var wrappedValue: Value {
         get { fatalError() }
-        set { fatalError() }
+        nonmutating set { fatalError() }
     }
     
     private let relay: BehaviorRelay<Value>
