@@ -25,8 +25,8 @@ class ExampleViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
-        self.test1()
-        // self.test2()
+        // self.test1()
+        self.test2()
     }
     
 }
@@ -38,10 +38,17 @@ extension ExampleViewController {
         
         /// 注意以下场景，BehaviorRelayWrapper使用ReadWriteTask set/get-value时
         /// 如果并行队列里set-value，在当前线程（主线程）监听里获取get-value，会导致死锁
-        /// ① 在当前线程subscribe(onNext:)会自动执行一次回调，执行BehaviorSubject.synchronized_subscribe，此方法会lock操作
-        /// ② 与此同时，set-value会执行BehaviorSubject.synchronized_on，此方法里也会执行lock操作，此时等待①解锁
-        /// ① 里会执行get-value，ReadWriteTask.sync，此时会等待②也就是set-value的解锁
-        /// 由此可见，①和②相互等待导致死锁，断点可以打到synchronized_on，synchronized_subscribe去查看堆栈
+        /// ① 在task.write里执行 name = xx，进而会执行BehaviorSubject.synchronized_on，此方法会lock操作
+        /// ② 在当前线程subscribe(onNext:)会自动执行一次回调，执行BehaviorSubject.synchronized_subscribe，此方法会lock操作
+        /// ①和②里均执行了task.write，②的task.write会等待①的task.write执行完，但结合①和②的锁则会导致相互等待
+        /// 断点可以打到synchronized_on，synchronized_subscribe去查看堆栈
+        /// 相等于以下结构：
+        /// lock.withLock {
+        ///    queue.sync {}
+        /// }
+        /// queue.sync {
+        ///    lock.withLock {}
+        /// }
         let queue = DispatchQueue(label: "test", attributes: .concurrent)
         for item in 0...1 {
             queue.async {

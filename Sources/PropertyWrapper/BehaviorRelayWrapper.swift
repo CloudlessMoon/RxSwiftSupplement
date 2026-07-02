@@ -9,21 +9,35 @@ import Foundation
 import RxSwift
 import RxRelay
 
-@propertyWrapper public final class BehaviorRelayWrapper<Element> {
+@propertyWrapper public struct BehaviorRelayWrapper<Value> {
     
-    public let projectedValue: BehaviorRelayProjected<Element>
-    
-    public var wrappedValue: Element {
+    public static subscript<EnclosingSelf: AnyObject>(
+        _enclosingInstance object: EnclosingSelf,
+        wrapped wrappedKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Value>,
+        storage storageKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Self>
+    ) -> Value {
         get {
-            return self.projectedValue.value
+            return object[keyPath: storageKeyPath].relay.value
         }
         set {
-            self.projectedValue.value = newValue
+            object[keyPath: storageKeyPath].relay.accept(newValue)
         }
     }
     
-    public init(wrappedValue: Element) {
-        self.projectedValue = BehaviorRelayProjected(wrappedValue: wrappedValue)
+    public var projectedValue: BehaviorRelayProjected<Value> {
+        return BehaviorRelayProjected(self.relay)
+    }
+    
+    @available(*, unavailable, message: "@BehaviorRelayWrapper is only available on properties of classes")
+    public var wrappedValue: Value {
+        get { fatalError() }
+        set { fatalError() }
+    }
+    
+    private let relay: BehaviorRelay<Value>
+    
+    public init(wrappedValue: Value) {
+        self.relay = BehaviorRelay(value: wrappedValue)
     }
     
 }
@@ -31,31 +45,29 @@ import RxRelay
 extension BehaviorRelayWrapper: CustomStringConvertible {
     
     public var description: String {
-        return String(describing: self.wrappedValue)
+        return String(describing: self.relay.value)
     }
     
 }
 
-public final class BehaviorRelayProjected<Element> {
+public struct BehaviorRelayProjected<Value> {
     
-    /// 注意：与BehaviorRelay一致，不会发送error or completed事件
-    public var observable: Observable<Element> {
+    private let relay: BehaviorRelay<Value>
+    
+    fileprivate init(_ relay: BehaviorRelay<Value>) {
+        self.relay = relay
+    }
+    
+}
+
+extension BehaviorRelayProjected {
+    
+    public var observable: Observable<Value> {
         return self.relay.asObservable()
     }
     
-    fileprivate var value: Element {
-        get {
-            return self.relay.value
-        }
-        set {
-            self.relay.accept(newValue)
-        }
-    }
-    
-    private let relay: BehaviorRelay<Element>
-    
-    fileprivate init(wrappedValue: Element) {
-        self.relay = BehaviorRelay(value: wrappedValue)
+    public var infallible: Infallible<Value> {
+        return self.relay.asInfallible()
     }
     
 }
